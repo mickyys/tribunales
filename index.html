@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selectores Dependientes Completo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .select-container {
+            margin-bottom: 15px;
+        }
+        select {
+            padding: 8px;
+            width: 350px;
+            font-size: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .disabled {
+            color: #999;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selección de Tribunales</h1>
+    
+    <div class="select-container">
+        <label for="competencia">Competencia:</label>
+        <select id="competencia" onchange="actualizarCortes()">
+            <option value="">Seleccione una competencia</option>
+        </select>
+    </div>
+    
+    <div class="select-container">
+        <label for="corte">Corte:</label>
+        <select id="corte" onchange="actualizarTribunales()" disabled>
+            <option value="">Primero seleccione una competencia</option>
+        </select>
+    </div>
+    
+    <div class="select-container">
+        <label for="tribunal">Tribunal:</label>
+        <select id="tribunal" onchange="actualizarTipos()" disabled>
+            <option value="">Primero seleccione una corte</option>
+        </select>
+    </div>
+    
+    <div class="select-container">
+        <label for="tipo">Libro/Tipo:</label>
+        <select id="tipo" disabled>
+            <option value="">Primero seleccione un tribunal</option>
+        </select>
+    </div>
+
+    <script>
+        // Datos completos estructurados del CSV
+        const datos = {
+            "Corte Suprema": {
+            },
+            "Corte Apelaciones": {
+                "C.A. de Santiago": {},
+                "C.A. de San Miguel": {}
+            },
+            "Civil": {
+                "C.A. de Santiago": {
+                    "1° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "2° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "3° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "4° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "5° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "6° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "7° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "8° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "9° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "10° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "11° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "12° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "13° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "14° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "15° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "16° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "17° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "18° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "19° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "20° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "21° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "22° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "23° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "24° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "25° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "26° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "27° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "28° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "29° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "30° Juzgado Civil de Santiago": ["C", "V", "E", "A", "F", "I"],
+                    "Juzgado de Letras de Colina": ["C", "V", "E", "A", "F", "I"]
+                },
+                "C.A. de San Miguel": {
+                    "1° Juzgado Civil de San Miguel": ["C", "V", "E", "A", "F", "I"],
+                    "2° Juzgado Civil de San Miguel": ["C", "V", "E", "A", "F", "I"],
+                    "3° Juzgado Civil de San Miguel": ["C", "V", "E", "A", "F", "I"],
+                    "4° Juzgado Civil de San Miguel": ["C", "V", "E", "A", "F", "I"],
+                    "1° Juzgado Civil de Puente Alto": ["C", "V", "E", "A", "F", "I"],
+                    "1° Juzgado de Letras de Talagante": ["C", "V", "E", "A", "F", "I"],
+                    "2° Juzgado de Letras de Talagante": ["C", "V", "E", "A", "F", "I"],
+                    "1° Juzgado de Letras de Melipilla": ["C", "V", "E", "A", "F", "I"],
+                    "1° Juzgado de Letras de Buin": ["C", "V", "E", "A", "F", "I"],
+                    "2° Juzgado de Letras de Buin": ["C", "V", "E", "A", "F", "I"],
+                    "Juzgado de Letras de Peñaflor": ["C", "V", "E", "A", "F", "I"],
+                    "1° Juzgado de Letras de San Bernardo": ["C", "V", "E", "A", "F", "I"],
+                    "1° Juzgado de Letras de San Bernardo Ex 3°": ["C", "V", "E", "A", "F", "I"],
+                    "2° Juzgado de Letras de San Bernardo": ["C", "V", "E", "A", "F", "I"],
+                    "2° Juzgado de Letras de San Bernardo Ex 3°": ["C", "V", "E", "A", "F", "I"]
+                }
+            },
+            "Laboral": {
+                "C.A. de Santiago": {
+                    "Juzgado de Letras de Colina": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "1° Juzgado de Letras del Trabajo de Santiago": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "2° Juzgado de Letras del Trabajo de Santiago": ["O", "T", "M", "E", "S", "U", "V", "I"]
+                },
+                "C.A. de San Miguel": {
+                    "1° Juzgado de Letras de Talagante": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "2° Juzgado de Letras de Talagante": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "1° Juzgado de Letras de Melipilla": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "1° Juzgado de Letras de Buin": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "2° Juzgado de Letras de Buin": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "Juzgado de Letras de Peñaflor": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "Juzgado de Letras del Trabajo de San Miguel": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "Juzgado de Letras del Trabajo de San Bernardo": ["O", "T", "M", "E", "S", "U", "V", "I"],
+                    "Juzgado de Letras del Trabajo de Puente Alto": ["O", "T", "M", "E", "S", "U", "V", "I"]
+                }
+            },
+            "Penal": {
+                "C.A. de Santiago": {
+                    "1° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "2° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "3° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "4° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "5° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "6° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "7° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "8° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "9° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "10° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "11° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "12° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "13° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "14° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "15° Juzgado de Garantía de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Juzgado de Garantía de Colina": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "1° Tribunal de Juicio Oral En Lo Penal de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "2° Tribunal de Juicio Oral En Lo Penal de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "3° Tribunal de Juicio Oral En Lo Penal de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "4° Tribunal de Juicio Oral En Lo Penal de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "5° Tribunal de Juicio Oral En Lo Penal de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "7° Tribunal de Juicio Oral En Lo Penal de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Tribunal de Juicio Oral En Lo Penal Colina": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Coordinación": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"]
+                },
+                "C.A. de San Miguel": {
+                    "Juzgado de Garantía de Puente Alto": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Juzgado de Garantía de San Bernardo": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Juzgado de Garantía de Melipilla": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Juzgado de Garantía de Curacaví": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Juzgado de Garantía de Talagante": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "6° Tribunal de Juicio Oral En Lo Penal de Santiago": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Tribunal de Juicio Oral En Lo Penal Puente Alto": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Tribunal de Juicio Oral En Lo Penal San Bernardo": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Tribunal de Juicio Oral En Lo Penal Melipilla": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"],
+                    "Tribunal de Juicio Oral En Lo Penal Talagante": ["Ordinaria", "Exhorto", "Administrativa", "Extradicion", "Militar"]
+                }
+            },
+            "Cobranza": {
+                "C.A. de Santiago": {
+                    "Juzgado de Letras de Colina": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "Jdo. Cob. Laboral y Previsional de Santiago": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "Otros tribunales": ["A", "C", "D", "E", "J", "L", "P", "R"]
+                },
+                "C.A. de San Miguel": {
+                    "1° Juzgado de Letras de Talagante": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "2° Juzgado de Letras de Talagante": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "1° Juzgado de Letras de Buin": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "2° Juzgado de Letras de Buin": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "1° Juzgado de Letras de Melipilla": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "Juzgado de Letras de Peñaflor": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "Jdo. Cob. Laboral y Previsional de San Miguel": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "Jdo. De Letras del Trabajo de San Bernardo": ["A", "C", "D", "E", "J", "L", "P", "R"],
+                    "Jdo. De Letras del Trabajo de Puente Alto": ["A", "C", "D", "E", "J", "L", "P", "R"]
+                }
+            }
+        };
+
+        // Inicializar el selector de competencia
+        window.onload = function() {
+            const competenciaSelect = document.getElementById('competencia');
+            for (const competencia in datos) {
+                const option = document.createElement('option');
+                option.value = competencia;
+                option.textContent = competencia;
+                competenciaSelect.appendChild(option);
+            }
+        };
+
+        function actualizarCortes() {
+            const competencia = document.getElementById('competencia').value;
+            const corteSelect = document.getElementById('corte');
+            const tribunalSelect = document.getElementById('tribunal');
+            const tipoSelect = document.getElementById('tipo');
+            
+            // Limpiar selects dependientes
+            corteSelect.innerHTML = '<option value="">Seleccione una corte</option>';
+            tribunalSelect.innerHTML = '<option value="">Primero seleccione una corte</option>';
+            tipoSelect.innerHTML = '<option value="">Primero seleccione un tribunal</option>';
+            
+            if (competencia) {
+                corteSelect.disabled = false;
+                corteSelect.classList.remove('disabled');
+                
+                const cortes = datos[competencia];
+                let tieneOpciones = false;
+                
+                for (const corte in cortes) {
+                    const option = document.createElement('option');
+                    option.value = corte;
+                    option.textContent = corte;
+                    corteSelect.appendChild(option);
+                    tieneOpciones = true;
+                }
+                
+                if (!tieneOpciones) {
+                    corteSelect.disabled = true;
+                    corteSelect.classList.add('disabled');
+                }
+            } else {
+                corteSelect.disabled = true;
+                corteSelect.classList.add('disabled');
+            }
+            
+            // Resetear selects dependientes
+            tribunalSelect.disabled = true;
+            tribunalSelect.classList.add('disabled');
+            tipoSelect.disabled = true;
+            tipoSelect.classList.add('disabled');
+        }
+
+        function actualizarTribunales() {
+            const competencia = document.getElementById('competencia').value;
+            const corte = document.getElementById('corte').value;
+            const tribunalSelect = document.getElementById('tribunal');
+            const tipoSelect = document.getElementById('tipo');
+            
+            // Limpiar select de tipo
+            tribunalSelect.innerHTML = '<option value="">Seleccione un tribunal</option>';
+            tipoSelect.innerHTML = '<option value="">Primero seleccione un tribunal</option>';
+            
+            if (competencia && corte) {
+                tribunalSelect.disabled = false;
+                tribunalSelect.classList.remove('disabled');
+                
+                const tribunales = datos[competencia][corte];
+                let tieneOpciones = false;
+                
+                for (const tribunal in tribunales) {
+                    const option = document.createElement('option');
+                    option.value = tribunal;
+                    option.textContent = tribunal;
+                    tribunalSelect.appendChild(option);
+                    tieneOpciones = true;
+                }
+                
+                if (!tieneOpciones) {
+                    tribunalSelect.disabled = true;
+                    tribunalSelect.classList.add('disabled');
+                }
+            } else {
+                tribunalSelect.disabled = true;
+                tribunalSelect.classList.add('disabled');
+            }
+            
+            // Resetear select de tipo
+            tipoSelect.disabled = true;
+            tipoSelect.classList.add('disabled');
+        }
+
+        function actualizarTipos() {
+            const competencia = document.getElementById('competencia').value;
+            const corte = document.getElementById('corte').value;
+            const tribunal = document.getElementById('tribunal').value;
+            const tipoSelect = document.getElementById('tipo');
+            
+            // Limpiar select de tipo
+            tipoSelect.innerHTML = '<option value="">Seleccione un tipo</option>';
+            
+            if (competencia && corte && tribunal) {
+                tipoSelect.disabled = false;
+                tipoSelect.classList.remove('disabled');
+                
+                const tipos = datos[competencia][corte][tribunal];
+                let tieneOpciones = false;
+                
+                for (const tipo of tipos) {
+                    const option = document.createElement('option');
+                    option.value = tipo;
+                    option.textContent = tipo;
+                    tipoSelect.appendChild(option);
+                    tieneOpciones = true;
+                }
+                
+                if (!tieneOpciones) {
+                    tipoSelect.disabled = true;
+                    tipoSelect.classList.add('disabled');
+                }
+            } else {
+                tipoSelect.disabled = true;
+                tipoSelect.classList.add('disabled');
+            }
+        }
+    </script>
+</body>
+</html>
